@@ -1,5 +1,5 @@
 {
-  "best_metric": 0.3843541145324707,
+  "best_metric": 0.3794960081577301,
   "best_model_checkpoint": "./lora_model/checkpoint-200",
   "epoch": 1.6,
   "eval_steps": 100,
@@ -10,53 +10,53 @@
   "log_history": [
     {
       "epoch": 0.4,
-      "grad_norm": 3.16984486579895,
-      "learning_rate": 0.00017333333333333334,
-      "loss": 0.6408,
+      "grad_norm": 2.965294599533081,
+      "learning_rate": 0.00018,
+      "loss": 0.6201,
       "step": 50
     },
     {
       "epoch": 0.8,
-      "grad_norm": 1.1181141138076782,
-      "learning_rate": 0.00014666666666666666,
-      "loss": 0.4895,
+      "grad_norm": 1.2000620365142822,
+      "learning_rate": 0.00016,
+      "loss": 0.4949,
       "step": 100
     },
     {
       "epoch": 0.8,
-      "eval_loss": 0.4235993027687073,
-      "eval_runtime": 1.4118,
-      "eval_samples_per_second": 354.159,
-      "eval_steps_per_second": 22.666,
+      "eval_loss": 0.41973817348480225,
+      "eval_runtime": 1.3398,
+      "eval_samples_per_second": 373.2,
+      "eval_steps_per_second": 23.885,
       "step": 100
     },
     {
       "epoch": 1.2,
-      "grad_norm": 2.246713399887085,
-      "learning_rate": 0.00012,
-      "loss": 0.3716,
+      "grad_norm": 2.2824196815490723,
+      "learning_rate": 0.00014,
+      "loss": 0.3766,
       "step": 150
     },
     {
       "epoch": 1.6,
-      "grad_norm": 1.4020031690597534,
-      "learning_rate": 9.333333333333334e-05,
-      "loss": 0.3817,
+      "grad_norm": 1.2930008172988892,
+      "learning_rate": 0.00012,
+      "loss": 0.3871,
       "step": 200
     },
     {
       "epoch": 1.6,
-      "eval_loss": 0.3843541145324707,
-      "eval_runtime": 1.2975,
-      "eval_samples_per_second": 385.35,
-      "eval_steps_per_second": 24.662,
+      "eval_loss": 0.3794960081577301,
+      "eval_runtime": 1.2663,
+      "eval_samples_per_second": 394.851,
+      "eval_steps_per_second": 25.27,
       "step": 200
     }
   ],
   "logging_steps": 50,
-  "max_steps": 375,
+  "max_steps": 500,
   "num_input_tokens_seen": 0,
-  "num_train_epochs": 3,
+  "num_train_epochs": 4,
   "save_steps": 200,
   "stateful_callbacks": {
     "TrainerControl": {

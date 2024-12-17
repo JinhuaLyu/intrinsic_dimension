@@ -34,8 +34,8 @@ training_args = TrainingArguments(
     output_dir="./lora_model",
     per_device_train_batch_size=16,
     per_device_eval_batch_size=16,
-    num_train_epochs=3,
-    evaluation_strategy="steps",
+    num_train_epochs=4,
+    eval_strategy="steps",
     eval_steps=100,
     save_steps=200,
     logging_steps=50,
@@ -62,15 +62,16 @@ trainer = Trainer(
 trainer.train()
 
 ## Evaluate the model
+print("Evaluate the model")
 metrics = trainer.evaluate()
 print(metrics)
 
-## Run predictions on new data
-inputs = tokenizer("This movie was absolutely wonderful!", return_tensors="pt")
-inputs = {k: v.to(device) for k, v in inputs.items()}
-outputs = peft_model(**inputs)
-predictions = outputs.logits.argmax(dim=-1)
-print("Predicted label:", predictions.item())
+# ## Run predictions on new data
+# inputs = tokenizer("This movie was absolutely wonderful!", return_tensors="pt")
+# inputs = {k: v.to(device) for k, v in inputs.items()}
+# outputs = peft_model(**inputs)
+# predictions = outputs.logits.argmax(dim=-1)
+# print("Predicted label:", predictions.item())
 
 ## Save the LoRA-modified model
 peft_model.save_pretrained("lora_distilbert_imdb")
