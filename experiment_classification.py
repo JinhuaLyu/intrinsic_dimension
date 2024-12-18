@@ -3,6 +3,8 @@ from datasets import load_dataset
 from peft import LoraConfig, get_peft_model
 from transformers import TrainingArguments, Trainer
 import torch
+import numpy as np
+from sklearn.metrics import f1_score
 
 model_name = "distilbert-base-uncased"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -10,10 +12,10 @@ model = AutoModelForSequenceClassification.from_pretrained(model_name, num_label
 raw_datasets = load_dataset("imdb")  # For demonstration
 
 def preprocess(examples):
-    return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=128) # adjust max_length as needed
+    return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=512) # adjust max_length as needed
 
 tokenized_datasets = raw_datasets.map(preprocess, batched=True)
-train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(2000))  # subset for demonstration
+train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(2000))
 eval_dataset = tokenized_datasets["test"].shuffle(seed=42).select(range(500))
 
 ## Define LoRA configuration
@@ -22,7 +24,7 @@ lora_config = LoraConfig(
     lora_alpha=16,
     lora_dropout=0.1,
     bias="none",
-    target_modules=["q_lin", "k_lin", "v_lin"], # 指定目标模块
+    target_modules=["q_lin", "k_lin", "v_lin"],
     task_type="SEQ_CLS"
 )
 
@@ -33,23 +35,16 @@ peft_model = get_peft_model(model, lora_config).to(device)
 training_args = TrainingArguments(
     output_dir="./lora_model",
     per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
-    num_train_epochs=4,
-    eval_strategy="steps",
-    eval_steps=100,
-    save_steps=200,
-    logging_steps=50,
-    learning_rate=2e-4,
+    per_device_eval_batch_size=64,
+    num_train_epochs=5,
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    logging_strategy="epoch",
+    learning_rate=2e-5,
     save_total_limit=1,
     load_best_model_at_end=True,
     report_to="none"  # Set to "wandb" or "tensorboard" if you want logging
 )
-
-## Set device to "mps" if available
-if torch.backends.mps.is_available():
-    device = torch.device("mps")
-else:
-    device = torch.device("cpu")
 
 trainer = Trainer(
     model= peft_model.to(device),
@@ -60,6 +55,15 @@ trainer = Trainer(
 )
 
 trainer.train()
+print(trainer.optimizer)
+
+print("Allocated memory (MB):", torch.mps.current_allocated_memory() / (1024 * 1024))
+
+predictions = trainer.predict(eval_dataset)
+preds = np.argmax(predictions.predictions, axis=-1)
+f1 = f1_score(predictions.label_ids, preds, average="binary")
+print("F1 Score (sklearn):", f1)
+
 
 ## Evaluate the model
 print("Evaluate the model")
@@ -73,6 +77,6 @@ print(metrics)
 # predictions = outputs.logits.argmax(dim=-1)
 # print("Predicted label:", predictions.item())
 
-## Save the LoRA-modified model
+# Save the LoRA-modified model
 peft_model.save_pretrained("lora_distilbert_imdb")
 
