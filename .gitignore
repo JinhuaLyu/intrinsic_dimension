@@ -1,1 +1,5 @@
 .venv/
+DistilBert_classification/full_finetune_distilbert_imdb/
+DistilBert_classification/full_finetune_model/
+DistilBert_classification/lora_distilbert_imdb/
+DistilBert_classification/lora_model/
