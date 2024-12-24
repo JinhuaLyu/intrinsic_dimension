@@ -15,8 +15,8 @@ device = "mps" if torch.backends.mps.is_available() else "cpu"
 raw_dataset = load_dataset("opus_books", "en-fr")
 train_dataset = raw_dataset["train"]
 validation_size = 1000
-small_val = train_dataset.select(range(0, validation_size))  # 验证集
-small_train = train_dataset.select(range(validation_size, len(train_dataset)))  # 训练集
+small_val = train_dataset.select(range(0, validation_size)) 
+small_train = train_dataset.select(range(validation_size, len(train_dataset)))  
 
 
 # 2) Load tokenizer
@@ -75,7 +75,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=4,
     evaluation_strategy="epoch",
     save_strategy="epoch",
-    logging_steps=50,
+    logging_steps=500,
     fp16=False,
     learning_rate=1e-4,
     report_to="none"
