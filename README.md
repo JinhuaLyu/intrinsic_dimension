@@ -1,14 +1,8 @@
-# LoRA-project
+# Main structure of the repo
 
-Main Structure of the Repo
-
-DistilBERT_classification
-
-Description:
+`DistilBERT_classification`:
 - Contains code for text classification using DistilBERT and fine-tune with LoRA.
 - LoRA_classification.pdf summarize the results of simple experiments.
 
-Translation
-
-Description:
+`Translation`:
 - Includes code or scripts for translation tasks.
