@@ -5,4 +5,4 @@
 - LoRA_classification.pdf summarize the results of simple experiments.
 
 `Translation`:
-- Includes code or scripts for translation tasks.
+- Includes code for translation tasks.
