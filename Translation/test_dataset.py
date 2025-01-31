@@ -9,7 +9,7 @@ import evaluate
 # get the fine-tuned model
 device = "mps" if torch.backends.mps.is_available() else "cpu"
 output_dir = "./lora-t5-translation-checkpoints/checkpoint-10000"
-output_dir_2 = "./t5-translation-checkpoints/checkpoint-18750"
+output_dir_2 = "./t5-translation-checkpoints-lr_3e-05/checkpoint-1884"
 model = T5ForConditionalGeneration.from_pretrained(output_dir_2).to(device)
 tokenizer = T5Tokenizer.from_pretrained("t5-small")
 
