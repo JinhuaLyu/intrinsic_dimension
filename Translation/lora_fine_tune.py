@@ -12,17 +12,29 @@ import functions
 import functions
 import matplotlib.pyplot as plt
 import os
-
-device = "mps" if torch.backends.mps.is_available() else "cpu"
+import random
+import numpy as np
 
 # 0) Hyperparameters
-learning_rates = [1e-4, 3e-4]   # Learning rates to try
-num_epochs = 10                             # Total number of epochs
+learning_rates = [1e-4, 5e-4]   # Learning rates to try
+num_epochs = 10   # Total number of epochs
 
 save_dir = "./results/plots"
 os.makedirs(save_dir, exist_ok=True)
 csv_dir = "./results/csv"
 os.makedirs(csv_dir, exist_ok=True)
+
+
+device = "mps" if torch.backends.mps.is_available() else "cpu"
+# Set random seed
+def set_seed(seed: int):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+set_seed(42)
+
 
 
 # 1) Load dataset
@@ -80,7 +92,7 @@ save_steps = int(steps_per_epoch * 0.5)
 for lr in learning_rates:
     print(f"Training with learning rate: {lr}")
     training_args = TrainingArguments(
-        output_dir=f"./lora-t5-translation-checkpoints_{lr}",
+        output_dir=f"./lora_checkpoints/lora-t5-translation-checkpoints_{lr}",
         overwrite_output_dir=True,
         num_train_epochs=num_epochs,
         per_device_train_batch_size=batch_size,
@@ -148,7 +160,7 @@ for lr in learning_rates:
     plt.grid(True)
 
     # Save the figure to a PNG file (with LR in the filename)
-    plot_filename = os.path.join(save_dir,f"loss_curves_lr_{lr}.png")
+    plot_filename = os.path.join(save_dir,f"lora_loss_curves_lr_{lr}.png")
     plt.savefig(plot_filename)
     plt.show()
 

@@ -19,7 +19,8 @@ learning_rate = 1e-5
 batch_size = 16  # Per-device training batch size
 num_epochs = 20  # Total number of epochs
 frozen_layers = "em_mlp"
-output_dir=f"./t5-translation-checkpoints-lr_{learning_rate}_bs_{batch_size}_frozen_{frozen_layers}"
+output_dir=f"./t5_checkpoints/t5-translation-checkpoints-lr_{learning_rate}_bs_{batch_size}_frozen_{frozen_layers}"
+
 
 save_dir = "./results/plots"
 os.makedirs(save_dir, exist_ok=True)
@@ -86,10 +87,6 @@ for name, param in base_model.named_parameters():
 # Confirm which layers are frozen
 for name, param in base_model.named_parameters():
     print(f"{name}: requires_grad={param.requires_grad}")
-
-# Ensure all parameters are trainable
-for param in base_model.parameters():
-    param.requires_grad = True
 
 # 5) Training arguments
 # Calculate warm-up steps (e.g., 10% of total training steps)

@@ -8,9 +8,12 @@ import evaluate
 
 # get the fine-tuned model
 device = "mps" if torch.backends.mps.is_available() else "cpu"
-output_dir = "./lora-t5-translation-checkpoints/checkpoint-10000"
-output_dir_2 = "./t5-translation-checkpoints-lr_3e-05/checkpoint-1884"
-model = T5ForConditionalGeneration.from_pretrained(output_dir_2).to(device)
+learning_rate = 1e-5
+batch_size = 16  # Per-device training batch size
+frozen_layers = "em_mlp"
+output_dir=f"./t5_checkpoints/t5-translation-checkpoints-lr_{learning_rate}_bs_{batch_size}_frozen_{frozen_layers}/checkpoint-7825"
+output_dir_2 = f"./lora_checkpoints/lora-t5-translation-checkpoints_{learning_rate}/checkpoint-10000"
+model = T5ForConditionalGeneration.from_pretrained(output_dir).to(device)
 tokenizer = T5Tokenizer.from_pretrained("t5-small")
 
 # Load BLEU metric
