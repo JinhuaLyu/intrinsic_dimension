@@ -16,7 +16,7 @@ import random
 import numpy as np
 
 # 0) Hyperparameters
-learning_rates = [1e-4, 5e-4]   # Learning rates to try
+learning_rates = [1e-4]   # Learning rates to try
 num_epochs = 10   # Total number of epochs
 
 save_dir = "./results/plots"
@@ -34,7 +34,6 @@ def set_seed(seed: int):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 set_seed(42)
-
 
 
 # 1) Load dataset
@@ -68,7 +67,7 @@ peft_config = LoraConfig(
     r=16,
     lora_alpha=16,
     target_modules=target_modules,
-    lora_dropout=0.05,
+    lora_dropout=0,
     bias="none",
     task_type=TaskType.SEQ_2_SEQ_LM
 )
@@ -92,7 +91,7 @@ save_steps = int(steps_per_epoch * 0.5)
 for lr in learning_rates:
     print(f"Training with learning rate: {lr}")
     training_args = TrainingArguments(
-        output_dir=f"./lora_checkpoints/lora-t5-translation-checkpoints_{lr}",
+        output_dir=f"./lora_checkpoints/lora-t5-translation-checkpoints_{lr}_dropout_0",
         overwrite_output_dir=True,
         num_train_epochs=num_epochs,
         per_device_train_batch_size=batch_size,
@@ -134,14 +133,14 @@ for lr in learning_rates:
     #             Save Training Loss to a File (CSV) Including LR in Filename     #
     ###############################################################################
     # Save training loss
-    csv_filename_train = os.path.join(csv_dir, f"lora_training_loss_lr_{lr}.csv")
+    csv_filename_train = os.path.join(csv_dir, f"lora_training_loss_lr_{lr}_dropout_0.csv")
     with open(csv_filename_train, "w") as f:
         f.write("step,training_loss\n")
         for step, loss in zip(train_steps, train_losses):
             f.write(f"{step},{loss}\n")
 
     # Save evaluation loss
-    csv_filename_eval = os.path.join(csv_dir, f"lora_evaluation_loss_lr_{lr}.csv")
+    csv_filename_eval = os.path.join(csv_dir, f"lora_evaluation_loss_lr_{lr}_dropout_0.csv")
     with open(csv_filename_eval, "w") as f:
         f.write("step,evaluation_loss\n")
         for step, loss in zip(eval_steps, eval_losses):
@@ -160,7 +159,7 @@ for lr in learning_rates:
     plt.grid(True)
 
     # Save the figure to a PNG file (with LR in the filename)
-    plot_filename = os.path.join(save_dir,f"lora_loss_curves_lr_{lr}.png")
+    plot_filename = os.path.join(save_dir,f"lora_loss_curves_lr_{lr}_dropout_0.png")
     plt.savefig(plot_filename)
     plt.show()
 

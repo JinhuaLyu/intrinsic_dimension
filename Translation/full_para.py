@@ -15,13 +15,14 @@ import os
 import functions
 
 # Hyperparameters
-learning_rate = 1e-5
+learning_rate = 5e-5
 batch_size = 16  # Per-device training batch size
-num_epochs = 20  # Total number of epochs
-frozen_layers = "em_mlp"
+frozen_layers = "none"
+warmup = 0
+weight_decay = 0
 output_dir=f"./t5_checkpoints/t5-translation-checkpoints-lr_{learning_rate}_bs_{batch_size}_frozen_{frozen_layers}"
 
-
+num_epochs = 20  # Total number of epochs
 save_dir = "./results/plots"
 os.makedirs(save_dir, exist_ok=True)
 csv_dir = "./results/csv"
@@ -77,20 +78,20 @@ data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model_name)
 # 4) Load base model
 base_model = T5ForConditionalGeneration.from_pretrained(model_name).to(device)
 
-# Freeze embeddings and first few layers to prevent overfitting
-for name, param in base_model.named_parameters():
-    if "shared" in name or "encoder.block.0" in name or "DenseReluDense" in name:
-        param.requires_grad = False
-    else:
-        param.requires_grad = True  # Ensure other parameters (Attention layers) are trainable
+# # Freeze embeddings and first few layers to prevent overfitting
+# for name, param in base_model.named_parameters():
+#     if "shared" in name or "encoder.block.0" in name or "DenseReluDense" in name:
+#         param.requires_grad = False
+#     else:
+#         param.requires_grad = True  # Ensure other parameters (Attention layers) are trainable
 
-# Confirm which layers are frozen
-for name, param in base_model.named_parameters():
-    print(f"{name}: requires_grad={param.requires_grad}")
+# # Confirm which layers are frozen
+# for name, param in base_model.named_parameters():
+#     print(f"{name}: requires_grad={param.requires_grad}")
 
 # 5) Training arguments
 # Calculate warm-up steps (e.g., 10% of total training steps)
-warmup_steps = int(0.1 * total_train_steps)
+warmup_steps = int(warmup * total_train_steps)
 # Calculate steps per epoch
 steps_per_epoch = train_dataset_size // batch_size
 save_steps = int(steps_per_epoch * 0.5)+1  # Save model every 0.5 epoch
@@ -108,15 +109,14 @@ training_args = TrainingArguments(
     logging_steps=500,
     learning_rate=learning_rate,  # Peak learning rate
     warmup_steps=warmup_steps,  # Warm-up for first 10% of steps
-    lr_scheduler_type="cosine",  # Cosine learning rate decay
     fp16=False,
     report_to="none",
     seed=42,
-    weight_decay=0.01
+    weight_decay=weight_decay
 )
 
 # 6) Custom Optimizer (AdamW)
-optimizer = AdamW(base_model.parameters(), lr=learning_rate, weight_decay=0.01)
+optimizer = AdamW(base_model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
 # Trainer
 trainer = Trainer(
