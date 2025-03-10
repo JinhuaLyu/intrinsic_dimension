@@ -1,4 +1,3 @@
-# configs/config.yaml
 model:
   model_name_or_path: "bert-base-uncased"
   num_labels: 2
@@ -9,15 +8,26 @@ data:
 
 training:
   num_train_epochs: 20
-  per_device_train_batch_size: 32
+  per_device_train_batch_size: 64
   per_device_eval_batch_size: 64
-  learning_rate: 1e-5
+  save_strategy: "epoch"
+  learning_rate: "3e-2"            # Will be converted to a float in the program
   optimizer_type: "adamw"
   seed: 42
-  trainable_layers: [0, 1, 2]  # Specify indices of layers to fine-tune; adjust as needed
-  train_mode: "attention_matrices"           # Options: "all", "attention_matrices", "ffn_matrices"
-  d: 10                     # Dimension of the low-dimensional subspace
+  trainable_layers: [0, 1, 2, 3, 4, 5]  # Specify the indices of the layers to fine-tune
+  train_mode: "attention_matrices"       # Options: "all", "attention_matrices", "ffn_matrices"
+  d: 1800                     # When using layer-wise replacement, the low-dimensional subspace dimension for each layer
+  projection: "fastfood"
+  warmup_steps: 500
+  save_total_limit: 1
+  load_best_model_at_end: True
+  metric_for_best_model: "accuracy"
+  greater_is_better: True
+  overwrite_output_dir: True
+  dataloader_num_workers: 2
+  intrinsic_mode: "global"      # "global" uses a global intrinsic dimension; "layerwise" uses layer-wise replacement
+  global_intrinsic_dimension: 1800  # When intrinsic_mode is "global", the low-dimensional space dimension for the entire model
 
 output:
   output_dir: "./outputs/experiment1"
-  save_strategy: "epoch"    # Or "no" to indicate not saving the model
+  save_strategy: "epoch"

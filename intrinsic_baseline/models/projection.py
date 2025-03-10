@@ -59,8 +59,14 @@ def fastfood_torched(theta: torch.Tensor, DD: int, proj_params: tuple) -> torch.
     All operations are performed on the device of theta.
     """
     d = theta.numel()
+    # Unpack projection parameters and move them to theta.device
     BB, Pi, GG, divisor, LL = proj_params
-
+    device = theta.device
+    BB = BB.to(device)
+    Pi = Pi.to(device)
+    GG = GG.to(device)
+    divisor = divisor.to(device)
+    
     # If theta is shorter than LL, pad it with zeros
     if d < LL:
         theta_padded = F.pad(theta, (0, LL - d), value=0.0)

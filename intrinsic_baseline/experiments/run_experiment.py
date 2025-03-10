@@ -8,7 +8,6 @@ from data.data_utils import load_and_preprocess_dataset
 from models.model_utils import build_model, replace_with_low_dim_params
 from training.trainer_utils import get_trainer
 
-# Create a logger for the experiment
 logger = get_logger(__name__)
 
 def main():
@@ -31,15 +30,32 @@ def main():
         num_labels=config["model"]["num_labels"]
     )
 
-    # Replace selected layers of the model with low-dimensional parameterizations
-    model = replace_with_low_dim_params(
-        model,
-        trainable_layers=config["training"]["trainable_layers"],
-        train_mode=config["training"]["train_mode"],
-        d=config["training"]["d"],
-        seed=seed,
-        projection=config["training"].get("projection", "linear")  # Allow projection selection via config
-    )
+    # Decide whether to apply layerwise replacement or global intrinsic dimension reduction.
+    intrinsic_mode = config["training"].get("intrinsic_mode", "layerwise")
+    if intrinsic_mode == "global":
+        global_intrinsic_dim = config["training"].get("global_intrinsic_dimension", None)
+        if global_intrinsic_dim is None:
+            raise ValueError("For global intrinsic mode, please set 'global_intrinsic_dimension' in your config.")
+        from models.intrinsic_dimension import intrinsic_dimension
+        model = intrinsic_dimension(
+            model, 
+            intrinsic_dimension=global_intrinsic_dim,
+            output_dir=output_dir,
+            str_filter=config["training"].get("str_filter", set()),
+            projection="global",
+            device="cuda" if torch.cuda.is_available() else "cpu"
+        )
+        logger.info("Applied global intrinsic dimension reduction with dimension: {}".format(global_intrinsic_dim))
+    else:
+        model = replace_with_low_dim_params(
+            model,
+            trainable_layers=config["training"]["trainable_layers"],
+            train_mode=config["training"]["train_mode"],
+            d=config["training"]["d"],
+            seed=seed,
+            projection=config["training"].get("projection", "fastfood")
+        )
+        logger.info("Applied layerwise low-dimensional replacement with d: {}".format(config["training"]["d"]))
 
     # Print parameter statistics for debugging and comparison
     total_params = sum(p.numel() for p in model.parameters())
@@ -61,7 +77,7 @@ def main():
     # Define the optimizer to update only trainable parameters
     optimizer = AdamW(
         filter(lambda p: p.requires_grad, model.parameters()), 
-        lr=config["training"]["learning_rate"]
+        lr=float(config["training"]["learning_rate"])
     )
 
     # Initialize the Trainer with the model, datasets, optimizer, and training hyperparameters

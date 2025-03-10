@@ -50,11 +50,16 @@ def get_trainer(
         per_device_eval_batch_size=training_config["per_device_eval_batch_size"],
         evaluation_strategy="epoch",
         save_strategy=training_config["save_strategy"],
-        learning_rate=training_config["learning_rate"],
+        learning_rate=float(training_config["learning_rate"]),
         logging_strategy="epoch",
         report_to="none",
         seed=training_config["seed"],
-        # Optional: set number of dataloader workers for speedup
+        warmup_steps=training_config.get("warmup_steps", 0),
+        save_total_limit=training_config.get("save_total_limit", None),
+        load_best_model_at_end=training_config.get("load_best_model_at_end", False),
+        metric_for_best_model=training_config.get("metric_for_best_model", "eval_loss"),
+        greater_is_better=training_config.get("greater_is_better", False),
+        overwrite_output_dir=training_config.get("overwrite_output_dir", False),
         dataloader_num_workers=training_config.get("dataloader_num_workers", 4)
     )
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)

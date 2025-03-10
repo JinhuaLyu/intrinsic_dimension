@@ -15,7 +15,7 @@ OUTPUT_DIR="./outputs/experiment1"
 mkdir -p "${OUTPUT_DIR}"
 
 # Run the experiment and redirect both stdout and stderr to log.txt in the output directory
-python experiments/run_experiment.py > "${OUTPUT_DIR}/log.txt" 2>&1
+python3 -m experiments.run_experiment | tee "${OUTPUT_DIR}/log.txt"
 
 # To run the experiment in the background, uncomment the line below:
 # nohup python experiments/run_experiment.py > "${OUTPUT_DIR}/log.txt" 2>&1 &
