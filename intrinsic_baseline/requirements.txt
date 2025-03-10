@@ -1,0 +1,7 @@
+datasets==3.2.0
+numpy==2.2.0
+PyYAML==6.0.2
+PyYAML==6.0.2
+scikit_learn==1.6.1
+torch==2.6.0+cu126
+transformers==4.48.0
