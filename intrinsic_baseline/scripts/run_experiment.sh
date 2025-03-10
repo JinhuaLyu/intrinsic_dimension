@@ -1,19 +1,21 @@
 #!/bin/bash
 # scripts/run_experiment.sh
-# 说明：此脚本用于在服务器上启动实验，日志将保存在指定的输出目录中。
+# This script is used to start the experiment on the server.
+# Logs will be saved in the specified output directory.
 
-# 激活虚拟环境（如果需要）
+# Activate virtual environment if needed
+# Uncomment and modify the following line if you use a virtual environment.
 # source /path/to/your/venv/bin/activate
 
-# 设置使用的 GPU 设备（例如使用第0号GPU）
-export CUDA_VISIBLE_DEVICES=0
+# Set the GPU device (e.g., use GPU 0)
+export CUDA_VISIBLE_DEVICES=3
 
-# 从配置文件中输出目录与脚本中保持一致
+# Define the output directory (make sure this matches the output_dir in your config)
 OUTPUT_DIR="./outputs/experiment1"
-mkdir -p ${OUTPUT_DIR}
+mkdir -p "${OUTPUT_DIR}"
 
-# 运行实验，日志输出到OUTPUT_DIR下的log.txt文件
-python experiments/run_experiment.py > ${OUTPUT_DIR}/log.txt 2>&1
+# Run the experiment and redirect both stdout and stderr to log.txt in the output directory
+python experiments/run_experiment.py > "${OUTPUT_DIR}/log.txt" 2>&1
 
-# 如果希望后台运行实验，可以使用以下命令（去掉注释）：
-# nohup python experiments/run_experiment.py > ${OUTPUT_DIR}/log.txt 2>&1 &
+# To run the experiment in the background, uncomment the line below:
+# nohup python experiments/run_experiment.py > "${OUTPUT_DIR}/log.txt" 2>&1 &
