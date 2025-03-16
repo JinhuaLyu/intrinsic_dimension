@@ -33,6 +33,7 @@ def main():
     # Decide whether to apply layerwise replacement or global intrinsic dimension reduction.
     intrinsic_mode = config["training"].get("intrinsic_mode", "layerwise")
     if intrinsic_mode == "global":
+        print("--------------------Debug: using global intrinsic_dimension---------------------")
         global_intrinsic_dim = config["training"].get("global_intrinsic_dimension", None)
         if global_intrinsic_dim is None:
             raise ValueError("For global intrinsic mode, please set 'global_intrinsic_dimension' in your config.")

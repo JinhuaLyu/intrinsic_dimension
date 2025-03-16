@@ -8,7 +8,7 @@
 # source /path/to/your/venv/bin/activate
 
 # Set the GPU device (e.g., use GPU 0)
-export CUDA_VISIBLE_DEVICES=3
+export CUDA_VISIBLE_DEVICES=7
 
 # Define the output directory (make sure this matches the output_dir in your config)
 OUTPUT_DIR="./outputs/experiment1"

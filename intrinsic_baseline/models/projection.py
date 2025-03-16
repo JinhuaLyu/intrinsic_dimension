@@ -66,7 +66,6 @@ def fastfood_torched(theta: torch.Tensor, DD: int, proj_params: tuple) -> torch.
     Pi = Pi.to(device)
     GG = GG.to(device)
     divisor = divisor.to(device)
-    
     # If theta is shorter than LL, pad it with zeros
     if d < LL:
         theta_padded = F.pad(theta, (0, LL - d), value=0.0)
@@ -80,7 +79,7 @@ def fastfood_torched(theta: torch.Tensor, DD: int, proj_params: tuple) -> torch.
     v = hadamard_transform(v)
 
     # Permute the result using Pi
-    v = v[Pi]
+    v = v.contiguous()[Pi]
 
     # Multiply element-wise by Gaussian vector G
     v = v * GG
