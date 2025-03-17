@@ -30,10 +30,12 @@ def main():
         num_labels=config["model"]["num_labels"]
     )
 
+    training_config = config["training"].copy()
+    training_config["output_dir"] = output_dir
+
     # Decide whether to apply layerwise replacement or global intrinsic dimension reduction.
     intrinsic_mode = config["training"].get("intrinsic_mode", "layerwise")
     if intrinsic_mode == "global":
-        print("--------------------Debug: using global intrinsic_dimension---------------------")
         global_intrinsic_dim = config["training"].get("global_intrinsic_dimension", None)
         if global_intrinsic_dim is None:
             raise ValueError("For global intrinsic mode, please set 'global_intrinsic_dimension' in your config.")
@@ -42,7 +44,7 @@ def main():
             model, 
             intrinsic_dimension=global_intrinsic_dim,
             output_dir=output_dir,
-            str_filter=config["training"].get("str_filter", set()),
+            training_config = training_config,
             projection="global",
             device="cuda" if torch.cuda.is_available() else "cpu"
         )
@@ -82,21 +84,14 @@ def main():
     )
 
     # Initialize the Trainer with the model, datasets, optimizer, and training hyperparameters
+
     trainer = get_trainer(
         model,
         tokenizer,
         train_dataset,
         eval_dataset,
         optimizer,
-        training_config={
-            "output_dir": output_dir,
-            "num_train_epochs": config["training"]["num_train_epochs"],
-            "per_device_train_batch_size": config["training"]["per_device_train_batch_size"],
-            "per_device_eval_batch_size": config["training"]["per_device_eval_batch_size"],
-            "learning_rate": config["training"]["learning_rate"],
-            "save_strategy": config["training"]["save_strategy"],
-            "seed": seed
-        }
+        training_config=training_config
     )
 
     # Ensure the model is on the correct device (GPU if available) before training

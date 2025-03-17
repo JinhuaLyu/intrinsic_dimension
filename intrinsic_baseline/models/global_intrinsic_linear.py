@@ -38,6 +38,11 @@ class GlobalIntrinsicLinear(nn.Module):
             theta_adjusted = F.pad(theta, (0, LL - theta.numel()), value=0.0)
         else:
             theta_adjusted = theta
+
+        # # Force a dummy operation to keep the gradient connected.
+        # theta_adjusted = theta_adjusted + 0.0
+        # theta_adjusted = theta_adjusted.contiguous()
+
         # Compute update vector: shape = (num_elements,)
         update_vector = fastfood_torched(theta_adjusted, self.num_elements, self.proj_params)
         update = update_vector.view(self.out_features, self.in_features)

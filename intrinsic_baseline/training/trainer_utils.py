@@ -25,6 +25,7 @@ class MyTrainer(Trainer):
         if self.tokenizer is not None:
             self.tokenizer.save_pretrained(output_dir)
 
+
 def get_trainer(
     model: torch.nn.Module,
     tokenizer,
@@ -36,6 +37,8 @@ def get_trainer(
     """
     Initializes the Trainer object.
     """
+    print("--------------------Debug----------------------")
+    print(training_config.get("load_best_model_at_end", False))
     training_args = TrainingArguments(
         output_dir=training_config["output_dir"],
         num_train_epochs=training_config["num_train_epochs"],
