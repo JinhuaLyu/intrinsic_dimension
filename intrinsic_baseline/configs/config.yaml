@@ -7,7 +7,7 @@ data:
   max_length: 128
 
 training:
-  num_train_epochs: 2
+  num_train_epochs: 20
   per_device_train_batch_size: 64
   per_device_eval_batch_size: 64
   save_strategy: "epoch"
@@ -26,7 +26,7 @@ training:
   overwrite_output_dir: True
   dataloader_num_workers: 2
   intrinsic_mode: "global"      # "global" uses a global intrinsic dimension; "layerwise" uses layer-wise replacement
-  global_intrinsic_dimension: 1900  # When intrinsic_mode is "global", the low-dimensional space dimension for the entire model
+  global_intrinsic_dimension: 10000
   early_stop: 5
   str_filter: {"query", "key", "value"}
 
