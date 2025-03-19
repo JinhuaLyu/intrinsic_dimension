@@ -7,21 +7,30 @@ from utils.reproducibility import set_seed, get_logger
 from data.data_utils import load_and_preprocess_dataset
 from models.model_utils import build_model, replace_with_low_dim_params
 from training.trainer_utils import get_trainer
+import argparse
 
 logger = get_logger(__name__)
 
 def main():
-    # Load configuration file from the configs directory
-    config_path = os.path.join(os.path.dirname(__file__), "../configs/config.yaml")
-    with open(config_path, "r") as f:
+    # Parse command-line arguments to allow a custom config file
+    parser = argparse.ArgumentParser(description="Run experiment with specified config.")
+    parser.add_argument("--config_path", type=str, default=os.path.join(os.path.dirname(__file__), "../configs/config.yaml"),
+                        help="Path to the configuration YAML file.")
+    args = parser.parse_args()
+    print("Using config file:", args.config_path)
+    # Load configuration file from the given path
+    with open(args.config_path, "r") as f:
         config = yaml.safe_load(f)
 
     # Set the random seed for reproducibility
     seed = config["training"]["seed"]
     set_seed(seed)
+    d = config["training"]["global_intrinsic_dimension"]
+    lr = config["training"]["learning_rate"]
 
     # Create the output directory to store checkpoints, logs, and results
     output_dir = config["output"]["output_dir"]
+    print("output_dir:", output_dir)
     os.makedirs(output_dir, exist_ok=True)
 
     # Build the pre-trained model and corresponding tokenizer
@@ -106,7 +115,7 @@ def main():
     logger.info(f"Test Metrics: {test_metrics}")
 
     # Save the evaluation and test results to a YAML file in the output directory
-    results_file = os.path.join(output_dir, "results.yaml")
+    results_file = os.path.join(output_dir, f"results_d_{d}_lr_{lr}.yaml")
     with open(results_file, "w") as f:
         yaml.dump({"eval": eval_metrics, "test": test_metrics}, f)
 
